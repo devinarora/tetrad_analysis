@@ -16,7 +16,10 @@ apt-get install -y --no-install-recommends \
     sudo 
 
 echo ">>> Installing Python packages..."
+# setuptools >= 81 no longer ships pkg_resources, which jupyter-contrib-core
+# imports, so `jupyter contrib nbextension install` fails without the pin.
 pip3 install --no-cache-dir --break-system-packages \
+    "setuptools<81" \
     ipython \
     tornado==6.1 \
     jupyter-client==7.3.2 \

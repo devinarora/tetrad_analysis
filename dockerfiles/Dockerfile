@@ -23,11 +23,6 @@ RUN apt install -y --no-install-recommends \
     python3-full
     
 # Install Python packages.
-# There is a bug:
-#   File "/opt/homebrew/lib/python3.10/site-packages/tornado/iostream.py", line 182, in advance
-#   assert 0 < size <= self._size
-# for tornado==6.2 and jupyter-client==8.0.2.
-# https://discourse.jupyter.org/t/jupyter-notebook-zmq-message-arrived-on-closed-channel-error/17869/10
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \

@@ -10,12 +10,13 @@ Tutorial project (UMD MSML610) on causal discovery with Tetrad/py-tetrad. No pac
 - `tmp.build/` is a build-time copy of `dockerfiles/`, not a second source tree. Also ignore `.ipynb_checkpoints/` and `docker_build.log`.
 
 ## Running
-Docker scripts must run with `dockerfiles/` as the working directory (`source ./utils.sh` is relative).
-- `cd dockerfiles && ./docker_build.sh` builds `umd_msml610/TetradAnalysis` (Ubuntu 24.04, JDK 21, Python 3.12, Jupyter).
-- `cd dockerfiles && ./docker_jupyter.sh` serves Jupyter at http://localhost:8888 with no token. The repo root is mounted at `/data` (Jupyter starts there); `dockerfiles/` is at `/curr_dir`.
-- `-p` changes the host port but not the port Jupyter binds inside (`run_jupyter.sh` hardcodes 8888), so use the default.
-- `docker_bash.sh` is malformed (broken line continuation) and `docker_exec.sh` expects a `class_project/...` git checkout. For a shell, run the image directly: `docker run --rm -ti -v "$PWD:/data" umd_msml610/TetradAnalysis bash`.
-- `tornado==6.1` and `jupyter-client==7.3.2` are pinned deliberately to avoid a known Jupyter/zmq crash; don't bump them casually.
+There is a single image, `tetrad_analysis`, built and run locally only; nothing is pushed to a registry. On Windows run these scripts with **Git Bash, not WSL**: WSL paths under `/mnt/c` are shadowed by Docker Desktop bind mounts, so `/data` ends up showing hash-named mount folders instead of the project. `docker_jupyter.sh` resolves paths with `pwd -P` and `cygpath` for this reason.
+- `cd dockerfiles && bash docker_build.sh` builds `tetrad_analysis` (Ubuntu 24.04, JDK 21, Python 3.12, Jupyter). This script still requires `dockerfiles/` as cwd (`source ./utils.sh` is relative). The image name lives in `docker_name.sh` and must stay lowercase, since Docker rejects mixed-case repository names.
+- `bash dockerfiles/docker_jupyter.sh` serves Jupyter at http://localhost:8888 with no token. The repo root is mounted at `/data` (Jupyter starts there); `dockerfiles/` is at `/curr_dir`. The container is named `tetrad_analysis`, so stop any running one before relaunching.
+- `-p <port>` maps that host port to the container's fixed 8888.
+- For a shell from PowerShell: `docker run --rm -ti -v "${PWD}:/data" tetrad_analysis bash`.
+- `docker_build.sh` and `docker_jupyter.sh` are the only docker entry points; the bash/exec/clean/push helpers were removed.
+- `tornado==6.1`, `jupyter-client==7.3.2`, and `setuptools<81` are pinned deliberately to avoid a known Jupyter/zmq crash and a `pkg_resources` import error in `jupyter-contrib-core`; don't bump them casually.
 
 ## Notebook gotchas
 - The image does not contain py-tetrad, JPype, or `datasets`; the first cell of each notebook pip-installs them, including py-tetrad from git master. Reruns therefore need network access and can break without any repo change.

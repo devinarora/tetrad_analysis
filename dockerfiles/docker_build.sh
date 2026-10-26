@@ -1,9 +1,7 @@
 #!/bin/bash -e
 
 source ./utils.sh
-
-REPO_NAME=umd_msml610
-IMAGE_NAME=TetradAnalysis
+source ./docker_name.sh
 
 # Build container.
 export DOCKER_BUILDKIT=1
